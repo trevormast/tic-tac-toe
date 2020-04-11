@@ -1,33 +1,48 @@
 <% player_token = current_user.x_user?(@game) ? 'X' : 'O' %>
 
 <style type="text/css">
+  .page-container             { padding: 30px; text-align: center; }
   .user-info                  { font-weight: normal; }
   .user-info.bold             { font-weight: 800; }
 
-  .game-container     { margin: 0 auto; width: 308px; }
+  .hidden                     { display: none; }
+
+  .game-container     { margin: 0 auto; width: 308px; height: 308px; }
   .grid-item          { width: 100px; height: 100px; float: left; border: 1px solid black; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
   .grid-item.disabled { cursor: initial; }
 </style>
 
+<div class="page-container">
+  <h1>Game <%= @game.id %></h1>
 
-<h1>Game <%= @game.id %></h1>
+  <h2 class="user-info" data-user-id="<%= @game.x_user.id %>">X: <%= @game.x_user.email %></h2>
+  <h2 class="user-info" data-user-id="<%= @game.o_user.id %>">O: <%= @game.o_user.email %></h2>
 
-<h2 class="user-info" data-user-id="<%= @game.x_user.id %>">X: <%= @game.x_user.email %></h2>
-<h2 class="user-info" data-user-id="<%= @game.o_user.id %>">O: <%= @game.o_user.email %></h2>
+  <br><br>
 
-<br><br>
+  <div class="game-container">
+    <% @game.grid.each_with_index do |grid_item, index| %>
+      <div class="grid-item" data-index="<%= index %>"></div>
+    <% end %>
+  </div>
 
-<div class="game-container">
-  <% @game.grid.each_with_index do |grid_item, index| %>
-    <div class="grid-item" data-index="<%= index %>"></div>
-  <% end %>
+  <div id="game-results" class="hidden">
+    <h1>GAME OVER: <span id="winning-token-placeholder"></span> Wins!</h1>
+    <br>
+    <%= form_for Game.new do |f| %>
+      <%= f.hidden_field :o_user_id, { value: @game.x_user_id } %>
+      <%= f.hidden_field :x_user_id, { value: @game.o_user_id } %>
+
+      <%= f.submit "Play Again?", class: "btn btn-primary" %>
+    <% end %>
+  </div>
 </div>
 
 <script type="text/javascript">
 
 
   $(document).ready(function(){
-    initialGameObject = <%= { active_player_id: @game.active_player.id, grid: @game.grid }.to_json.html_safe %>
+    initialGameObject = <%= { active_player_id: @game.active_player.id, grid: @game.grid, winning_token: @game.results.winner }.to_json.html_safe %>
 
     setupTurn(initialGameObject)
 
@@ -63,6 +78,12 @@
       $('.user-info').removeClass('bold');
       // add bolding to active user
       $('.user-info[data-user-id="' + gameObject.active_player_id + '"]').addClass('bold');
+
+      if (gameObject.winning_token === 'X' || gameObject.winning_token === "O") {
+        $('#winning-token-placeholder').html(gameObject.winning_token);
+        $('#game-results').removeClass('hidden');
+        $('.grid-item').addClass('disabled');
+      }
     })
   }
 </script>
