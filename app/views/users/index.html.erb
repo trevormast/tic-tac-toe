@@ -1,0 +1,21 @@
+<h1>Choose an Opponent:</h1>
+<br><br>
+
+<% @users.each do |user| %>
+  <p><%= link_to user.email, '#', class: 'user-select-link', data: { user_id: user.id } %></p>
+<% end %>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.user-select-link').click(function(e) {
+      e.preventDefault();
+
+      $.ajax({
+        type: 'POST',
+        url: '/games',
+        data: { game: { x_user_id: <%= current_user.id %>, o_user_id: $(this).data('userId') } },
+        async:false
+      });
+    })
+  });
+</script>
