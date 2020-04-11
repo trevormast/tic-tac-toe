@@ -27,7 +27,7 @@
   </div>
 
   <div id="game-results" class="hidden">
-    <h1>GAME OVER: <span id="winning-token-placeholder"></span> Wins!</h1>
+    <h1>GAME OVER: <span id="result-placeholder"></span></h1>
     <br>
     <%= form_for Game.new do |f| %>
       <%= f.hidden_field :o_user_id, { value: @game.x_user_id } %>
@@ -42,7 +42,7 @@
 
 
   $(document).ready(function(){
-    initialGameObject = <%= { active_player_id: @game.active_player.id, grid: @game.grid, winning_token: @game.results.winner }.to_json.html_safe %>
+    initialGameObject = <%= { active_player_id: @game.active_player.id, grid: @game.grid, result: @game.results.to_s }.to_json.html_safe %>
 
     setupTurn(initialGameObject)
 
@@ -79,8 +79,8 @@
       // add bolding to active user
       $('.user-info[data-user-id="' + gameObject.active_player_id + '"]').addClass('bold');
 
-      if (gameObject.winning_token === 'X' || gameObject.winning_token === "O") {
-        $('#winning-token-placeholder').html(gameObject.winning_token);
+      if (gameObject.result !== 'In Progress') {
+        $('#result-placeholder').html(gameObject.result);
         $('#game-results').removeClass('hidden');
         $('.grid-item').addClass('disabled');
       }

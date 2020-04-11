@@ -7,7 +7,15 @@ class GameResult
   end
 
   def finished?
-    winner.present?
+    winner.present? || @game_grid.all?(&:present?)
+  end
+
+  def to_s
+    return "#{ winning_token } Wins!" if winning_token.present?
+
+    return 'Tie!' if @game_grid.all?(&:present?)
+
+    return 'In Progress'
   end
 
   private
