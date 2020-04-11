@@ -37,12 +37,12 @@
         $.ajax({
           type: 'PATCH',
           url: '/games/<%= @game.id %>',
-          data: { grid_index: $(this).data('index'), player_token: '<%= player_token %>' },
-          async:false
+          data: { grid_index: $(this).data('index'), player_token: '<%= player_token %>' }
         });
       }
     });
   })
+
   // gameObject example: { active_player_id: 1, grid: ['X', null, null, null, null, null, null, null, null] }
   function setupTurn(gameObject) {
     // add player tokens to grid
@@ -55,6 +55,8 @@
       // disable clicks on the grid if not this user's turn
       if (gameObject.active_player_id !== <%= current_user.id %>) {
         $('.grid-item').addClass('disabled');
+      } else {
+        $('.grid-item').removeClass('disabled');
       }
 
       // remove bolding from both users
