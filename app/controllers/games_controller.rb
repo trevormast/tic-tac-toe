@@ -15,7 +15,13 @@ class GamesController < ApplicationController
   end
 
   def update
+    game = Game.find(params[:id])
 
+    game.grid[params[:grid_index].to_i] = params[:player_token]
+
+    game.save
+
+    redirect_to game_path(game )
   end
 
   private

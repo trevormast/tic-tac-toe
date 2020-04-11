@@ -1,4 +1,37 @@
+<% player_token = current_user.x_user?(@game) ? 'X' : 'O' %>
+
+<style type="text/css">
+  .game-container     { margin: 0 auto; width: 308px; }
+  .grid-item          { width: 100px; height: 100px; float: left; border: 1px solid black; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
+</style>
+
+
 <h1>Game <%= @game.id %></h1>
 
 <h2>X: <%= @game.x_user.email %></h2>
 <h2>O: <%= @game.o_user.email %></h2>
+
+<br><br>
+
+<div class="game-container">
+  <% @game.grid.each_with_index do |grid_item, index| %>
+    <div class="grid-item" data-index="<%= index %>">
+      <%= grid_item.to_s.upcase %>
+    </div>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.grid-item').click(function() {
+      $.ajax({
+        type: 'PATCH',
+        url: '/games/<%= @game.id %>',
+        data: { grid_index: $(this).data('index'), player_token: '<%= player_token %>' },
+        async:false
+      });
+    });
+  })
+</script>
+
+
