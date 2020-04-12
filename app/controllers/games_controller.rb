@@ -20,7 +20,7 @@ class GamesController < ApplicationController
     game.grid[params[:grid_index].to_i] = params[:player_token]
 
     if game.save
-      ActionCable.server.broadcast('games', active_player_id: game.active_player.id, grid: game.grid, result: game.results.to_s)
+      GamesChannel.broadcast_to(game, active_player_id: game.active_player.id, grid: game.grid, result: game.results.to_s)
       head :ok
     end
   end

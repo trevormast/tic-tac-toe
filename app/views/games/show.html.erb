@@ -7,12 +7,12 @@
 
   .hidden                     { display: none; }
 
-  .game-container     { margin: 0 auto; width: 308px; height: 308px; }
+  .grid-container     { margin: 0 auto; width: 308px; height: 308px; }
   .grid-item          { width: 100px; height: 100px; float: left; border: 1px solid black; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
   .grid-item.disabled { cursor: initial; }
 </style>
 
-<div class="page-container">
+<div id="game-container" class="page-container" data-game-id="<%= @game.id %>">
   <h1>Game <%= @game.id %></h1>
 
   <h2 class="user-info" data-user-id="<%= @game.x_user.id %>">X: <%= @game.x_user.email %></h2>
@@ -20,7 +20,7 @@
 
   <br><br>
 
-  <div class="game-container">
+  <div class="grid-container">
     <% @game.grid.each_with_index do |grid_item, index| %>
       <div class="grid-item" data-index="<%= index %>"></div>
     <% end %>
@@ -42,10 +42,15 @@
 
 
   $(document).ready(function(){
+    App.messages = App.cable.subscriptions.create( { channel: 'GamesChannel', id: $('#game-container').data('game-id') }, {
+      received: function(data) {
+        setupTurn(data);
+      }
+    });
+
     initialGameObject = <%= { active_player_id: @game.active_player.id, grid: @game.grid, result: @game.results.to_s }.to_json.html_safe %>
 
     setupTurn(initialGameObject)
-
 
     $('.grid-item').click(function() {
       if (!$(this).hasClass('disabled')) {

@@ -6,8 +6,4 @@ this.App = {};
 
 App.cable = ActionCable.createConsumer();
 
-App.messages = App.cable.subscriptions.create('GamesChannel', {
-  received: function(data) {
-    setupTurn(data);
-  }
-});
+
